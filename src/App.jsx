@@ -4,9 +4,9 @@ import NoticeThread from './components/NoticeThread';
 import { clubsData as initialClubs, initialNotices } from './data/mockData';
 
 export default function App() {
-  const [viewMode, setViewMode] = useState('student'); // 'student' or 'admin'
+  const [viewMode, setViewMode] = useState('student'); 
   const [activeClub, setActiveClub] = useState(null);
-  const [clubs, setClubs] = useState(initialClubs); // Now using State for clubs
+  const [clubs, setClubs] = useState(initialClubs); 
   const [allNotices, setAllNotices] = useState(initialNotices);
 
   const getCurrentTime = () => {
@@ -14,12 +14,10 @@ export default function App() {
     return now.toLocaleDateString() + " " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // 1. Mark as Read Logic
   const handleSelectClub = (selectedClub) => {
-    // Set the active club
     setActiveClub(selectedClub);
-
-    // If I am a student, mark this club as read (unread = 0)
+    
+    // LOGIC: If Student opens a club, clear the unread count (Reset to 0)
     if (viewMode === 'student' && selectedClub.unread > 0) {
       const updatedClubs = clubs.map((c) => 
         c.id === selectedClub.id ? { ...c, unread: 0 } : c
@@ -29,6 +27,7 @@ export default function App() {
   };
 
   const handlePostNotice = (clubId, content, fileName) => {
+    // 1. Add the Message
     const newMsg = {
       id: Date.now(),
       clubId: clubId,
@@ -38,38 +37,43 @@ export default function App() {
       timestamp: getCurrentTime()
     };
     setAllNotices([...allNotices, newMsg]);
+
+    // 2. Increment the Unread Count for this Club
+    const updatedClubs = clubs.map((c) => 
+      c.id === clubId ? { ...c, unread: c.unread + 1 } : c
+    );
+    setClubs(updatedClubs);
   };
 
-  // 2. Delete Logic
   const handleDeleteNotice = (noticeId) => {
     setAllNotices(allNotices.filter((n) => n.id !== noticeId));
   };
 
   return (
-    <div className="h-screen bg-gray-800 flex items-center justify-center p-8 font-sans">
+    <div className="h-screen bg-slate-900 flex items-center justify-center p-6 font-sans relative">
       
-      {/* Simulation Toggle */}
-      <div className="absolute top-4 right-4 bg-white p-2 rounded shadow flex gap-2">
+      {/* Toggle Switch (Added z-50 here so it stays on top) */}
+      <div className="absolute top-6 right-6 z-50 bg-slate-800 p-1 rounded-full border border-slate-700 flex">
         <button 
           onClick={() => { setViewMode('student'); setActiveClub(null); }}
-          className={`px-3 py-1 rounded text-sm ${viewMode === 'student' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${viewMode === 'student' ? 'bg-indigo-500 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
         >
-          Student View
+          Student
         </button>
         <button 
           onClick={() => { setViewMode('admin'); setActiveClub(null); }}
-          className={`px-3 py-1 rounded text-sm ${viewMode === 'admin' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${viewMode === 'admin' ? 'bg-indigo-500 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
         >
-          Admin View
+          Admin
         </button>
       </div>
 
       {/* Main Container */}
-      <div className="w-full max-w-5xl h-[80vh] bg-white rounded-xl shadow-2xl overflow-hidden flex">
+      <div className="w-full max-w-6xl h-[85vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex border border-slate-800/50 relative z-0">
         <ClubList 
           clubs={clubs} 
           activeClubId={activeClub?.id} 
-          onSelect={handleSelectClub} // Use our new handler
+          onSelect={handleSelectClub} 
           mode={viewMode}
         />
         <NoticeThread 
@@ -77,7 +81,7 @@ export default function App() {
           notices={allNotices} 
           mode={viewMode}
           onPostNotice={handlePostNotice}
-          onDeleteNotice={handleDeleteNotice} // Pass delete function down
+          onDeleteNotice={handleDeleteNotice}
         />
       </div>
     </div>

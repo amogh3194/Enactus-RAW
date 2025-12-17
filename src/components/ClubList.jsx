@@ -1,36 +1,52 @@
 import React from 'react';
-import { MessageSquare, Shield } from 'lucide-react';
+import { MessageSquare, Shield, Users, ChevronRight } from 'lucide-react';
 
 const ClubList = ({ clubs, onSelect, activeClubId, mode }) => {
-  // If in Admin mode, filter only clubs where user isAdmin
   const displayClubs = mode === 'admin' 
     ? clubs.filter(c => c.isAdmin) 
     : clubs;
 
   return (
-    <div className="w-1/3 border-r border-gray-200 bg-white h-full overflow-y-auto">
-      <div className="p-4 border-b border-gray-100 bg-gray-50">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          {mode === 'student' ? <MessageSquare size={20}/> : <Shield size={20}/>}
+    <div className="w-1/3 border-r border-slate-200 bg-slate-50 h-full overflow-y-auto flex flex-col">
+      {/* Header */}
+      <div className="p-6 bg-white border-b border-slate-200 sticky top-0 z-10">
+        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+          {mode === 'student' ? <MessageSquare className="text-indigo-600"/> : <Shield className="text-indigo-600"/>}
           {mode === 'student' ? 'Student Portal' : 'Admin Console'}
         </h2>
-        <p className="text-xs text-gray-500 mt-1">Select a club to view notices</p>
+        <p className="text-sm text-slate-500 mt-2">
+          {mode === 'student' ? 'Your subscribed channels' : 'Manage your organizations'}
+        </p>
       </div>
       
-      <ul>
+      {/* List */}
+      <ul className="flex-1 p-4 space-y-2">
         {displayClubs.map((club) => (
           <li 
             key={club.id}
             onClick={() => onSelect(club)}
-            className={`p-4 cursor-pointer hover:bg-blue-50 transition-colors flex justify-between items-center border-b border-gray-100
-              ${activeClubId === club.id ? 'bg-blue-100 border-l-4 border-l-blue-600' : ''}`}
+            className={`group p-4 rounded-xl cursor-pointer transition-all duration-200 flex justify-between items-center border
+              ${activeClubId === club.id 
+                ? 'bg-white border-indigo-500 shadow-md ring-1 ring-indigo-500/20' 
+                : 'bg-white border-transparent hover:border-slate-300 hover:shadow-sm'}`}
           >
-            <div className="font-medium text-gray-700">{club.name}</div>
-            {mode === 'student' && club.unread > 0 && (
-              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                {club.unread}
-              </span>
-            )}
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${activeClubId === club.id ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-500'}`}>
+                <Users size={18} />
+              </div>
+              <div className={`font-semibold ${activeClubId === club.id ? 'text-slate-800' : 'text-slate-600'}`}>
+                {club.name}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {mode === 'student' && club.unread > 0 && (
+                <span className="bg-rose-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
+                  {club.unread}
+                </span>
+              )}
+              <ChevronRight size={16} className={`text-slate-300 transition-transform ${activeClubId === club.id ? 'translate-x-1 text-indigo-500' : 'group-hover:translate-x-1'}`} />
+            </div>
           </li>
         ))}
       </ul>
