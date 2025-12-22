@@ -1,26 +1,24 @@
 import React, { useState } from 'react';
-import { Bell, Paperclip, Send, FileText, Trash2, Clock } from 'lucide-react';
+import { Send, Trash2, Calendar, Clock, Paperclip } from 'lucide-react';
 
 const NoticeThread = ({ club, notices, mode, onPostNotice, onDeleteNotice }) => {
   const [newNotice, setNewNotice] = useState("");
-  const [attachedFile, setAttachedFile] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!newNotice && !attachedFile) return;
-    onPostNotice(club.id, newNotice, attachedFile ? attachedFile.name : null);
+    if (!newNotice) return;
+    onPostNotice(club.id, newNotice, null);
     setNewNotice("");
-    setAttachedFile(null);
   };
 
+  // 1. Empty State
   if (!club) {
     return (
-      <div className="w-2/3 flex flex-col items-center justify-center h-full bg-slate-50">
-        <div className="bg-white p-6 rounded-full shadow-sm mb-4">
-          <Bell size={48} className="text-slate-300"/>
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 text-slate-400">
+        <div className="text-center p-8">
+            <h3 className="text-xl font-bold text-slate-600">No Club Selected</h3>
+            <p className="mt-2 text-sm">Select a club from the left to view notices</p>
         </div>
-        <h3 className="text-xl font-bold text-slate-700">No Club Selected</h3>
-        <p className="text-slate-400 mt-2">Choose a club from the sidebar to view updates</p>
       </div>
     );
   }
@@ -28,98 +26,69 @@ const NoticeThread = ({ club, notices, mode, onPostNotice, onDeleteNotice }) => 
   const clubNotices = notices.filter(n => n.clubId === club.id);
 
   return (
-    <div className="w-2/3 flex flex-col h-full bg-slate-50/50 relative">
+    <div className="flex-1 flex flex-col h-full bg-gray-50 relative">
       
-      {/* Header */}
-      <div className="px-6 py-5 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-        <div>
-          <h3 className="font-bold text-xl text-slate-800">{club.name}</h3>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            <span className="text-xs text-slate-500 font-medium tracking-wide uppercase">Official Feed</span>
-          </div>
-        </div>
+      {/* 2. Thread Header (Clean White) */}
+      <div className="px-8 py-6 bg-white border-b border-gray-200 sticky top-0 z-10">
+        <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">{club.name}</h2>
+        <p className="text-slate-500 text-sm mt-1">Official Announcements Feed</p>
       </div>
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      {/* 3. The Feed (New Card Style) */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {clubNotices.length === 0 ? (
-          <div className="flex flex-col items-center justify-center mt-20 opacity-50">
-            <div className="w-16 h-1 bg-slate-200 rounded mb-2"></div>
-            <div className="w-10 h-1 bg-slate-200 rounded"></div>
-            <p className="text-slate-400 text-sm mt-4">No notices posted yet</p>
-          </div>
+          <p className="text-center text-slate-400 mt-10">No notices yet.</p>
         ) : (
           clubNotices.map((notice) => (
-            <div key={notice.id} className="group flex flex-col items-start w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="bg-white rounded-2xl rounded-tl-none p-5 shadow-sm border border-slate-100 max-w-[80%] hover:shadow-md transition-shadow relative">
-                
-                {/* Delete Button */}
-                {mode === 'admin' && (
-                  <button 
-                    onClick={() => onDeleteNotice(notice.id)}
-                    className="absolute -right-10 top-2 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all p-2 bg-white rounded-full shadow-sm"
-                    title="Delete Notice"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                )}
-
-                {/* Header of Card */}
-                <div className="flex justify-between items-start mb-3 border-b border-slate-50 pb-2">
-                   <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">ADMIN</span>
-                   <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
-                      <Clock size={10} />
-                      {notice.timestamp}
-                   </div>
+            <div key={notice.id} className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-amber-400 relative group transition-all hover:shadow-md">
+              
+              {/* Card Header: Badge & Date */}
+              <div className="flex justify-between items-start mb-3">
+                <span className="px-2 py-1 bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-wider rounded border border-amber-100">
+                  {club.name}
+                </span>
+                <div className="flex items-center gap-1 text-slate-400 text-xs font-medium">
+                   <Calendar size={12}/>
+                   <span>{notice.timestamp}</span>
                 </div>
-
-                {/* Content */}
-                <p className="text-slate-700 text-sm whitespace-pre-wrap leading-relaxed">{notice.content}</p>
-
-                {/* Attachment */}
-                {notice.file && (
-                  <div className="mt-4 flex items-center gap-2 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 p-2 rounded-lg transition-colors cursor-pointer group/file">
-                    <div className="bg-white p-1.5 rounded border border-slate-200">
-                       <FileText size={16} className="text-rose-500"/>
-                    </div>
-                    <span className="text-sm font-medium text-slate-600 group-hover/file:text-indigo-600 underline decoration-dotted">{notice.file}</span>
-                  </div>
-                )}
               </div>
+
+              {/* Card Content */}
+              <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap font-medium">
+                {notice.content}
+              </p>
+
+              {/* Delete Button (Only for Admin) - Hidden until hover */}
+              {mode === 'admin' && (
+                <button 
+                  onClick={() => onDeleteNotice(notice.id)}
+                  className="absolute top-4 right-4 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
           ))
         )}
       </div>
 
-      {/* Admin Input Area */}
+      {/* 4. Admin Input (Teal Button Style) */}
       {mode === 'admin' && (
-        <div className="p-4 bg-white border-t border-slate-200 sticky bottom-0 z-20">
-           <form onSubmit={handleSubmit} className="flex flex-col gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-200 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all">
+        <div className="p-4 bg-white border-t border-gray-200">
+           <form onSubmit={handleSubmit} className="flex gap-3">
              <input 
                type="text" 
                value={newNotice}
                onChange={(e) => setNewNotice(e.target.value)}
-               placeholder="Write a new announcement..." 
-               className="w-full bg-transparent p-3 text-slate-800 placeholder:text-slate-400 focus:outline-none text-sm font-medium"
+               placeholder="Draft a new notice..." 
+               className="flex-1 bg-gray-50 border border-gray-200 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
              />
-             
-             <div className="flex items-center justify-between px-2 pb-1">
-                <label className="cursor-pointer flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors py-1 px-2 rounded hover:bg-indigo-50">
-                  <Paperclip size={16} />
-                  <span>{attachedFile ? attachedFile.name : "Attach File"}</span>
-                  <input type="file" className="hidden" onChange={(e) => setAttachedFile(e.target.files[0])} />
-                </label>
-
-                <button 
-                  type="submit" 
-                  disabled={!newNotice && !attachedFile}
-                  className="bg-indigo-600 text-white p-2.5 rounded-xl hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2 px-4"
-                >
-                  <span className="text-xs font-bold">POST</span>
-                  <Send size={16} />
-                </button>
-             </div>
+             <button 
+               type="submit" 
+               className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-md font-bold text-sm shadow-sm transition-colors flex items-center gap-2"
+             >
+               POST <Send size={14}/>
+             </button>
            </form>
         </div>
       )}
