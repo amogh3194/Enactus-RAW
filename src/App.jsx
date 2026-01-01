@@ -1,26 +1,50 @@
-// src/App.jsx
 import React, { useState } from 'react';
-// These imports must match the file locations exactly!
 import ClubsPage from './pages/ClubsPage';
 import ClubDashboard from './pages/ClubDashboard';
+import EventDetailsPage from './pages/EventDetailsPage';
+import RecruitmentPage from './pages/RecruitmentPage'; // <--- Import New Page
 
 export default function App() {
   const [selectedClub, setSelectedClub] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedNotice, setSelectedNotice] = useState(null); // <--- New State
 
+  // 1. If Event Page Active
+  if (selectedEvent) {
+    return (
+      <EventDetailsPage 
+        event={selectedEvent} 
+        onBack={() => setSelectedEvent(null)} 
+      />
+    );
+  }
+
+  // 2. If Recruitment Page Active (NEW)
+  if (selectedNotice) {
+    return (
+      <RecruitmentPage 
+        notice={selectedNotice}
+        onBack={() => setSelectedNotice(null)}
+      />
+    );
+  }
+
+  // 3. If Club Dashboard Active
+  if (selectedClub) {
+    return (
+      <ClubDashboard 
+        club={selectedClub} 
+        onBack={() => setSelectedClub(null)}
+        onEventClick={(event) => setSelectedEvent(event)}
+        onNoticeClick={(notice) => setSelectedNotice(notice)} // <--- Handle Notice Click
+      />
+    );
+  }
+
+  // 4. Default: Club List
   return (
-    <div>
-      {selectedClub ? (
-        // IF a club is selected, show its Dashboard (Events/Recruitments)
-        <ClubDashboard 
-          club={selectedClub} 
-          onBack={() => setSelectedClub(null)} 
-        />
-      ) : (
-        // ELSE show the list of all clubs
-        <ClubsPage 
-          onSelectClub={(club) => setSelectedClub(club)} 
-        />
-      )}
-    </div>
+    <ClubsPage 
+      onSelectClub={(club) => setSelectedClub(club)} 
+    />
   );
 }

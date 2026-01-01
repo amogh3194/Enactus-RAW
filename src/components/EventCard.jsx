@@ -1,9 +1,12 @@
 import React from 'react';
 import { Users, Clock, Calendar } from 'lucide-react';
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, onClick }) => {
   return (
-    <div className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer">
+    <div 
+      onClick={() => onClick && onClick(event)} // <--- Added Click Trigger
+      className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer"
+    >
       
       {/* 1. Image Banner Area */}
       <div className="h-44 w-full overflow-hidden relative">
