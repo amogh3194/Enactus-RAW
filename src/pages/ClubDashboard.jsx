@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import EventCard from '../components/EventCard';
 import NoticeCard from '../components/NoticeCard';
 import { eventsData, recruitmentData } from '../data/mockData';
-import { ChevronLeft, Info } from 'lucide-react';
+import { ChevronLeft, Info, Plus } from 'lucide-react'; // <--- Added 'Plus' icon
 
-const ClubDashboard = ({ club, onBack, onEventClick, onNoticeClick }) => {
+const ClubDashboard = ({ club, onBack, onEventClick, onNoticeClick, onPostClick }) => { // <--- Added 'onPostClick'
   const [activeTab, setActiveTab] = useState('events');
 
   // Filter content specific to this club
-  // We use optional chaining (?.) just in case data is loading or missing
+  // Using optional chaining (?.) to prevent crashes if club data is loading
   const clubEvents = eventsData.filter(e => e.organizer === club?.name);
   const clubRecruitments = recruitmentData.filter(r => r.clubName === club?.name);
 
@@ -44,9 +44,11 @@ const ClubDashboard = ({ club, onBack, onEventClick, onNoticeClick }) => {
         <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500 rounded-full blur-[100px] opacity-20 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
       </div>
 
-      {/* 2. Navigation Tabs */}
-      <div className="max-w-7xl mx-auto px-6 -mt-8 relative z-20">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-1.5 inline-flex flex-wrap gap-1">
+      {/* 2. Navigation Tabs & Actions */}
+      <div className="max-w-7xl mx-auto px-6 -mt-8 relative z-20 flex flex-wrap items-center justify-between gap-4">
+        
+        {/* Tabs */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-1.5 inline-flex gap-1">
           {['events', 'recruitment', 'about'].map((tab) => (
             <button
               key={tab}
@@ -61,6 +63,15 @@ const ClubDashboard = ({ club, onBack, onEventClick, onNoticeClick }) => {
             </button>
           ))}
         </div>
+
+        {/* NEW: Create Event Button */}
+        <button 
+          onClick={onPostClick}
+          className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-md flex items-center gap-2 transition-all transform active:scale-95"
+        >
+          <Plus size={16}/> Create Event
+        </button>
+
       </div>
 
       {/* 3. Main Content Area */}

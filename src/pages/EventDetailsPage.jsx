@@ -2,12 +2,12 @@ import React from 'react';
 import { Calendar, Clock, MapPin, Users, Award, Share2, ChevronLeft } from 'lucide-react';
 import Header from '../components/Header';
 
-const EventDetailsPage = ({ event, onBack }) => {
+const EventDetailsPage = ({ event, onBack, onRegister, isRegistered }) => {
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-sans pb-20">
       <Header />
 
-      {/* 1. Hero Banner Area */}
+      {/* Hero Banner Area */}
       <div className="h-64 md:h-80 w-full relative bg-slate-900">
         <img 
           src={event.image} 
@@ -40,7 +40,7 @@ const EventDetailsPage = ({ event, onBack }) => {
         </div>
       </div>
 
-      {/* 2. Main Layout (Grid) */}
+      {/* Main Layout */}
       <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* LEFT COLUMN: Details */}
@@ -93,19 +93,16 @@ const EventDetailsPage = ({ event, onBack }) => {
                <Award className="text-amber-500"/> Prizes & Rewards
              </h3>
              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Gold */}
                 <div className="bg-gradient-to-b from-yellow-50 to-white p-4 rounded-xl border border-yellow-200 text-center transform hover:scale-105 transition-transform">
                    <div className="text-4xl mb-2">🥇</div>
                    <h4 className="font-black text-slate-800 text-xl">₹25,000</h4>
                    <p className="text-xs text-slate-500 uppercase font-bold mt-1">Winner</p>
                 </div>
-                {/* Silver */}
                 <div className="bg-gradient-to-b from-slate-50 to-white p-4 rounded-xl border border-slate-200 text-center transform hover:scale-105 transition-transform">
                    <div className="text-4xl mb-2">🥈</div>
                    <h4 className="font-black text-slate-800 text-xl">₹15,000</h4>
                    <p className="text-xs text-slate-500 uppercase font-bold mt-1">Runner Up</p>
                 </div>
-                {/* Bronze */}
                 <div className="bg-gradient-to-b from-orange-50 to-white p-4 rounded-xl border border-orange-200 text-center transform hover:scale-105 transition-transform">
                    <div className="text-4xl mb-2">🥉</div>
                    <h4 className="font-black text-slate-800 text-xl">₹5,000</h4>
@@ -131,9 +128,22 @@ const EventDetailsPage = ({ event, onBack }) => {
                  </div>
               </div>
 
-              <button className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-teal-200 transition-all transform active:scale-95 mb-3 text-lg">
-                 Register Now
-              </button>
+              {/* DYNAMIC REGISTER BUTTON */}
+              {isRegistered ? (
+                 <button 
+                   disabled
+                   className="w-full bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold py-4 rounded-xl mb-3 text-lg cursor-not-allowed flex items-center justify-center gap-2"
+                 >
+                   ✅ Registered
+                 </button>
+              ) : (
+                 <button 
+                   onClick={onRegister}
+                   className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-teal-200 transition-all transform active:scale-95 mb-3 text-lg"
+                 >
+                   Register Now
+                 </button>
+              )}
               
               <button className="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200">
                  <Share2 size={18}/> Share Event
